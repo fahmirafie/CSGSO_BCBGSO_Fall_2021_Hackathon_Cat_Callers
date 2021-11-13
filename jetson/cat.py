@@ -4,6 +4,7 @@ from os import X_OK
 import jetson.inference
 import jetson.utils
 import random
+import serial
 
 import argparse
 import sys
@@ -69,46 +70,56 @@ def rand_xy(top, bottom, right, left):
 	while (top < y < bottom):
 		y = gen_randy()
 
-# process frames until the user exits
-while True:
-	# capture the next image
-	img = input.Capture()
+with serial.Serial('/dev/ttyUSB0',9600,timeout=3.) as port:
+	# process frames until the user exits
+	while True:
+		# capture the next image
+		img = input.Capture()
 
-	# detect objects in the image (with overlay)
-	detections = net.Detect(img, overlay=opt.overlay)
+		# detect objects in the image (with overlay)
+		detections = net.Detect(img, overlay=opt.overlay)
 
-	# print the detections
-	print("detected {:d} objects in image".format(len(detections)))
+		# print the detections
+		print("detected {:d} objects in image".format(len(detections)))
 
-	for detection in detections:
-		if detection.ClassID == 1:
-			print(detection)
-			rand_xy(detection.Top, detection.Right, detection.Bottom, detection.Left)
+		catDetected = False
 
-			if (x < point_x):
-				move_x = x - point_x
-			else:
-				move_x = point_x - x
+		for detection in detections:
+			if detection.ClassID == 1:
+				print(detection)
+				rand_xy(detection.Top, detection.Right, detection.Bottom, detection.Left)
 
-			if (y < point_y):
-				move_y = y - point_y
-			else:
-				move_y = point_y - y
+				if (x < point_x):
+					move_x = x - point_x
+				else:
+					move_x = point_x - x
 
-			## Send command to move by how many degrees in x and y axis
-            
-			# move(move_x, move_y)
-			print(move_x)
+				if (y < point_y):
+					move_y = y - point_y
+				else:
+					move_y = point_y - y
 
-	# render the image
-	output.Render(img)
+				## Send command to move by how many degrees in x and y axis
+				catDetected = True
 
-	# update the title bar
-	output.SetStatus("{:s} | Network {:.0f} FPS".format(opt.network, net.GetNetworkFPS()))
+		if catDetected:
+#			moveCommand(move_x, move_y)
+			port.write(4)
+			port.write(5)
+    	port.flush()
+		else:
+			port.write(0)
+			port.flust()
 
-	# print out performance info
-	net.PrintProfilerTimes()
+		# render the image
+		output.Render(img)
 
-	# exit on input/output EOS
-	if not input.IsStreaming() or not output.IsStreaming():
-		break
+		# update the title bar
+		output.SetStatus("{:s} | Network {:.0f} FPS".format(opt.network, net.GetNetworkFPS()))
+
+		# print out performance info
+		net.PrintProfilerTimes()
+
+		# exit on input/output EOS
+		if not input.IsStreaming() or not output.IsStreaming():
+			break
