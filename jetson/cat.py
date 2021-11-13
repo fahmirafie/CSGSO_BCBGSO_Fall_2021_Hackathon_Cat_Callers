@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from ctypes import resize
 from os import X_OK
 import jetson.inference
 import jetson.utils
@@ -70,6 +71,9 @@ def rand_xy(top, bottom, right, left):
 	while (top < y < bottom):
 		y = gen_randy()
 
+	result = [x, y]
+	return result
+
 with serial.Serial('/dev/ttyUSB0',9600,timeout=3.) as port:
 	# process frames until the user exits
 	while True:
@@ -82,34 +86,35 @@ with serial.Serial('/dev/ttyUSB0',9600,timeout=3.) as port:
 		# print the detections
 		print("detected {:d} objects in image".format(len(detections)))
 
-		catDetected = False
-
 		for detection in detections:
-			if detection.ClassID == 1:
+			if detection.ClassID == 17:
 				print(detection)
-				rand_xy(detection.Top, detection.Right, detection.Bottom, detection.Left)
+				result = rand_xy(detection.Top, detection.Right, detection.Bottom, detection.Left)
+				move_x = 0
+				move_y = 0
+
+				x = result[0]
+				y = result[1]
 
 				if (x < point_x):
 					move_x = x - point_x
 				else:
-					move_x = point_x - x
+					move_x = point_x + x
 
 				if (y < point_y):
 					move_y = y - point_y
 				else:
-					move_y = point_y - y
+					move_y = point_y + y
 
-				## Send command to move by how many degrees in x and y axis
-				catDetected = True
+				break
 
-		if catDetected:
-#			moveCommand(move_x, move_y)
-			port.write(4)
-			port.write(5)
-    	port.flush()
-		else:
-			port.write(0)
-			port.flust()
+		print(move_x)
+		print(move_y)
+		mystr = str(move_x) +  "," + str(move_y)
+		## Send command to move by how many degrees in x and y axis
+		port.write(bytes(mystr, "utf-8"))
+		#port.write(bytes(move_y, "utf-8"))
+		port.flush()
 
 		# render the image
 		output.Render(img)
