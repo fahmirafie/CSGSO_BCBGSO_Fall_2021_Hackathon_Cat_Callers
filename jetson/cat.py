@@ -34,8 +34,21 @@ net = jetson.inference.detectNet(opt.network, sys.argv, opt.threshold)
 # create video sources
 input = jetson.utils.videoSource(opt.input_URI, argv=sys.argv)
 
-point_x = 0
-point_y = 0
+def gen_randx():
+	return random.randrange(-41, 41)
+ 
+def gen_randy():
+	return random.randrange(-26, 26)
+ 
+def rand_xy(top, bottom, right, left):
+	x = gen_randx()
+	y = gen_randy()
+	while (left < x < right):
+		x = gen_randx()
+ 
+	while (top < y < bottom):
+		y = gen_randy()
+
 
 # process frames until the user exits
 while True:
@@ -45,15 +58,16 @@ while True:
 	# detect objects in the image (with overlay)
 	detections = net.Detect(img, overlay=opt.overlay)
 
-	# print the detections
-	print("detected {:d} objects in image".format(len(detections)))
-
+	cats = []
 	for detection in detections:
 		print(detection)
-    if detection.ClassID == 17:
-      center = detection.Center
-      // Move laser from the center argparse
-
+    	if detection.ClassID == 17:
+			cats.append(detection)
+	
+	with serial.Serial('/dev/ttyUSB0',9600,timeout=3.) as port:
+		port.write(next_led_state)
+		port.flush()
+		time.sleep(.1)
 
 	# render the image
 	output.Render(img)
