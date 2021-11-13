@@ -29,15 +29,20 @@ import argparse
 import sys
 
 # parse the command line
-parser = argparse.ArgumentParser(description="Locate objects in a live camera stream using an object detection DNN.", 
+parser = argparse.ArgumentParser(description="Locate objects in a live camera stream using an object detection DNN.",
                                  formatter_class=argparse.RawTextHelpFormatter, epilog=jetson.inference.detectNet.Usage() +
                                  jetson.utils.videoSource.Usage() + jetson.utils.videoOutput.Usage() + jetson.utils.logUsage())
 
-parser.add_argument("input_URI", type=str, default="", nargs='?', help="URI of the input stream")
-parser.add_argument("output_URI", type=str, default="", nargs='?', help="URI of the output stream")
-parser.add_argument("--network", type=str, default="ssd-mobilenet-v2", help="pre-trained model to load (see below for options)")
-parser.add_argument("--overlay", type=str, default="box,labels,conf", help="detection overlay flags (e.g. --overlay=box,labels,conf)\nvalid combinations are:  'box', 'labels', 'conf', 'none'")
-parser.add_argument("--threshold", type=float, default=0.5, help="minimum detection threshold to use") 
+parser.add_argument("input_URI", type=str, default="",
+                    nargs='?', help="URI of the input stream")
+parser.add_argument("output_URI", type=str, default="",
+                    nargs='?', help="URI of the output stream")
+parser.add_argument("--network", type=str, default="ssd-mobilenet-v2",
+                    help="pre-trained model to load (see below for options)")
+parser.add_argument("--overlay", type=str, default="box,labels,conf",
+                    help="detection overlay flags (e.g. --overlay=box,labels,conf)\nvalid combinations are:  'box', 'labels', 'conf', 'none'")
+parser.add_argument("--threshold", type=float, default=0.5,
+                    help="minimum detection threshold to use")
 
 is_headless = ["--headless"] if sys.argv[0].find('console.py') != -1 else [""]
 
@@ -48,17 +53,34 @@ except:
 	parser.print_help()
 	sys.exit(0)
 
-# create video output object 
+# create video output object
 output = jetson.utils.videoOutput(opt.output_URI, argv=sys.argv+is_headless)
-	
+
 # load the object detection network
 net = jetson.inference.detectNet(opt.network, sys.argv, opt.threshold)
 
 # create video sources
 input = jetson.utils.videoSource(opt.input_URI, argv=sys.argv)
 
-point_x = 0
-point_y = 0
+# Center coordinates in degrees
+point_x = 41
+point_y = 21
+
+def gen_randx():
+	test_x = random.randrange(-41, 41)
+
+def gen_randy():
+	test_y = random.randrange(-26, 26)
+
+def rand_xy(top, bottom, right, left):
+	x = gen_randx()
+	y = gen_randy()
+	while (left < x < right):
+		x = gen_randx()
+
+	while (top < y < bottom):
+		y = gen_randy()
+
 
 # process frames until the user exits
 while True:
@@ -72,11 +94,9 @@ while True:
 	print("detected {:d} objects in image".format(len(detections)))
 
 	for detection in detections:
-		print(detection)
-    if detection.ClassID == 17:
-      center = detection.Center
-      // Move laser from the center argparse
-
+		if detection.ClassID == 17:
+			rand_xy()
+			move(x, y)
 
 	# render the image
 	output.Render(img)
