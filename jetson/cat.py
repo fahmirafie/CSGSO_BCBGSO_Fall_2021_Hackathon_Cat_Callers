@@ -75,7 +75,7 @@ while True:
 	for detection in detections:
 		if detection.ClassID == 17:
 			print(detection)
-			rand_xy()
+			rand_xy(detection.Top, detection.Right, detection.Down, detection.Left)
 			move(x, y)
 
 	# render the image
