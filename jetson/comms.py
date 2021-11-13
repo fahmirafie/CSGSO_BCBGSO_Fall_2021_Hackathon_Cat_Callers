@@ -6,7 +6,7 @@ import math
 from enum import Enum
 
 # Change this to the virtual port of your arduino
-SERIAL_PORT = '/dev/ttyUSB0'
+SERIAL_PORT = '/dev/ttyACM0'
 
 # The SensorType enum should match the one in the Arduino code
 class SensorType(Enum):
