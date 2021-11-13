@@ -7,9 +7,9 @@ import serial
 import time
 
 arduino = serial.Serial(
-port = 'dev/ttyACM10',
+port = 'dev/ttyACM0',
 baudrate = 9600,
-bytesize = serial.EIGHTBITS, 
+bytesize = serial.EIGHTBITS,
 parity = serial.PARITY_NONE,
 stopbits = serial.STOPBITS_ONE,
 timeout = 5,
@@ -20,7 +20,7 @@ writeTimeout = 2)
 
 while True:
     try:
-        arduino.write("command from jetson")
+        arduino.write(bytes('40','utf-8'))
         data = arduino.readline()
         if data:
             print(data)

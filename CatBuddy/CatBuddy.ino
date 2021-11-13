@@ -6,7 +6,7 @@
 #define ZONE_HEIGHT 7                    //height of active zone, m
 #define SERVO_DELAY 20                   //delay between signals to motor, ms
 #define TERMINATOR_CHAR '|'              //terminator for serial inputs, char
-#define BAUD 9600 
+#define BAUD 9600
 
 Servo servoHorizontal;
 Servo servoVertical;
@@ -36,7 +36,8 @@ void loop()
   if(Serial.available() > 0)
   {
     String serialInput = Serial.readStringUntil(TERMINATOR_CHAR);
-    Serial.print("Recieved: " + serialInput + "\n");
+    Serial.print("Reciev   ed: " + serialInput + "\n");
+    Serial.flush();
     // parse string to set horizontal and vertical angle 
   }
    //moveToHorizontal(angleHorizontal);
