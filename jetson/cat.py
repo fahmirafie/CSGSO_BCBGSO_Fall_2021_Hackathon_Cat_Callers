@@ -61,6 +61,7 @@ def gen_randy():
 	return random.randrange(0, 52)
 
 def rand_xy(top, bottom, right, left):
+	x = gen_randx()
 	y = gen_randy()
 	while (left < x < right):
 		x = gen_randx()
@@ -80,9 +81,9 @@ while True:
 	print("detected {:d} objects in image".format(len(detections)))
 
 	for detection in detections:
-		if detection.ClassID == 17:
+		if detection.ClassID == 1:
 			print(detection)
-			rand_xy(detection.Top, detection.Right, detection.Down, detection.Left)
+			rand_xy(detection.Top, detection.Right, detection.Bottom, detection.Left)
 
 			if (x < point_x):
 				move_x = x - point_x
@@ -95,7 +96,9 @@ while True:
 				move_y = point_y - y
 
 			## Send command to move by how many degrees in x and y axis
-			move(move_x, move_y)
+            
+			# move(move_x, move_y)
+			print(move_x)
 
 	# render the image
 	output.Render(img)
@@ -109,4 +112,3 @@ while True:
 	# exit on input/output EOS
 	if not input.IsStreaming() or not output.IsStreaming():
 		break
-
