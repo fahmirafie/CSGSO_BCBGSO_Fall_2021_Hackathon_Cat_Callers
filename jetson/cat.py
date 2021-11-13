@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from os import X_OK
 import jetson.inference
 import jetson.utils
 import random
@@ -45,21 +46,27 @@ input = jetson.utils.videoSource(opt.input_URI, argv=sys.argv)
 point_x = 41
 point_y = 21
 
+# THe coordinates that we want to move to
+x = 0
+y = 0
+
+# How much to move in degrees
+move_x = 0
+move_y = 0
+
 def gen_randx():
-	return random.randrange(-41, 41)
+	return random.randrange(0, 82)
 
 def gen_randy():
-	return random.randrange(-26, 26)
+	return random.randrange(0, 52)
 
 def rand_xy(top, bottom, right, left):
-	x = gen_randx()
 	y = gen_randy()
 	while (left < x < right):
 		x = gen_randx()
 
 	while (top < y < bottom):
 		y = gen_randy()
-
 
 # process frames until the user exits
 while True:
@@ -76,7 +83,19 @@ while True:
 		if detection.ClassID == 17:
 			print(detection)
 			rand_xy(detection.Top, detection.Right, detection.Down, detection.Left)
-			move(x, y)
+
+			if (x < point_x):
+				move_x = x - point_x
+			else:
+				move_x = point_x - x
+
+			if (y < point_y):
+				move_y = y - point_y
+			else:
+				move_y = point_y - y
+
+			## Send command to move by how many degrees in x and y axis
+			move(move_x, move_y)
 
 	# render the image
 	output.Render(img)
