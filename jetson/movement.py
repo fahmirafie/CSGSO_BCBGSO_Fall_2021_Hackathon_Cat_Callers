@@ -2,6 +2,8 @@
 
 import serial
 import time
+
+def getCoordinates
     
 ON = bytes("on","utf8")
 OFF = bytes("off","utf8")
