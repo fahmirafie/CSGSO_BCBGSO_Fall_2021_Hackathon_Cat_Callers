@@ -23,6 +23,7 @@
 
 import jetson.inference
 import jetson.utils
+import random
 
 import argparse
 import sys
@@ -56,6 +57,8 @@ net = jetson.inference.detectNet(opt.network, sys.argv, opt.threshold)
 # create video sources
 input = jetson.utils.videoSource(opt.input_URI, argv=sys.argv)
 
+point_x = 0
+point_y = 0
 
 # process frames until the user exits
 while True:
@@ -70,6 +73,10 @@ while True:
 
 	for detection in detections:
 		print(detection)
+    if detection.ClassID == 17:
+      center = detection.Center
+      // Move laser from the center argparse
+
 
 	# render the image
 	output.Render(img)

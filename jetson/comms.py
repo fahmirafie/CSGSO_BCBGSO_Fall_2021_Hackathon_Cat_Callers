@@ -16,9 +16,10 @@ class SensorType(Enum):
 
 # Add more commands here
 class CommandType(Enum):
-    MOVE=1
-    STOP=2
-
+    UP=1
+    RIGHT=2
+    DOWN=3
+    LEFT=4
 
 # Class to contain command info
 class Command():
