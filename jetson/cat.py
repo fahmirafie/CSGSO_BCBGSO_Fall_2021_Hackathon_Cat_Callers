@@ -46,10 +46,10 @@ point_x = 41
 point_y = 21
 
 def gen_randx():
-	test_x = random.randrange(-41, 41)
+	return random.randrange(-41, 41)
 
 def gen_randy():
-	test_y = random.randrange(-26, 26)
+	return random.randrange(-26, 26)
 
 def rand_xy(top, bottom, right, left):
 	x = gen_randx()
