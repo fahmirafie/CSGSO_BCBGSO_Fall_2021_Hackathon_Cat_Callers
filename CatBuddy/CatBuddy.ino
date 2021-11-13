@@ -36,7 +36,7 @@ void loop()
   if(Serial.available() > 0)
   {
     String serialInput = Serial.readStringUntil(TERMINATOR_CHAR);
-    Serial.print("Reciev   ed: " + serialInput + "\n");
+    Serial.print("Recieved: " + serialInput + "\n");
     Serial.flush();
     // parse string to set horizontal and vertical angle 
   }
